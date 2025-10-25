@@ -1,5 +1,9 @@
 # BioSense - Innomakers4Health 2025
 
+<p align="center">
+  <img src="./assets/pfizer-logo.png" alt="Pfizer Logo" width="300"/>
+</p>
+
 ## About the Hackathon
 
 Innomakers4Health 2025 is a healthcare innovation hackathon organized by Pfizer, bringing together developers, designers, and healthcare professionals to create impactful solutions that address real-world health challenges. This event focuses on leveraging cutting-edge technology to improve patient outcomes, streamline healthcare processes, and advance medical research.
