@@ -1,8 +1,7 @@
 # BioSense - Innomakers4Health 2025
 
-<p align="center">
-  <img src="./assets/pfizer-logo.png" alt="Pfizer Logo" width="300"/>
-</p>
+<img width="2000" height="825" alt="imagen" src="https://github.com/user-attachments/assets/ce7d3079-ec70-4dcc-bc32-723d26c9548e" />
+
 
 ## About the Hackathon
 
