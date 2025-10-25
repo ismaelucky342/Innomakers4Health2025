@@ -1,0 +1,2506 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioSense - Plataforma Predictiva Basada en Biomarcadores</title>
+    <style>
+        /* ==================== VARIABLES ==================== */
+        :root {
+            --primary-dark: #0A2463;
+            --primary-blue: #1E3A8A;
+            --accent-mint: #06D6A0;
+            --accent-teal: #0EA5E9;
+            --white: #FFFFFF;
+            --gray-50: #F8FAFC;
+            --gray-100: #F1F5F9;
+            --gray-200: #E2E8F0;
+            --gray-300: #CBD5E1;
+            --gray-600: #475569;
+            --gray-800: #1E293B;
+            --shadow-md: 0 4px 6px -1px rgba(10, 36, 99, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(10, 36, 99, 0.15);
+        }
+
+        /* ==================== DARK MODE (DEFAULT) ==================== */
+        body {
+            --bg-primary: #0F172A;
+            --bg-secondary: #1E293B;
+            --bg-tertiary: #334155;
+            --text-primary: #F1F5F9;
+            --text-secondary: #CBD5E1;
+            --text-tertiary: #94A3B8;
+            --border-color: #334155;
+            --card-bg: #1E293B;
+            --input-bg: #334155;
+        }
+
+        /* ==================== LIGHT MODE ==================== */
+        body.light-mode {
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F8FAFC;
+            --bg-tertiary: #F1F5F9;
+            --text-primary: #1E293B;
+            --text-secondary: #475569;
+            --text-tertiary: #64748B;
+            --border-color: #E2E8F0;
+            --card-bg: #FFFFFF;
+            --input-bg: #F8FAFC;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* ==================== THEME TOGGLE ==================== */
+        .theme-toggle {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-secondary);
+            border-color: var(--accent-mint);
+            color: var(--accent-mint);
+        }
+
+        .theme-toggle-icon {
+            font-size: 1.2rem;
+        }
+
+        /* ==================== CHATBOT BUTTON - REMOVED ==================== */
+        /* Botón personalizado eliminado, se usa solo el de Flowise */
+
+        /* ==================== CHATBOT LINK BUTTON ==================== */
+        .chatbot-link {
+            background: var(--accent-mint);
+            color: var(--primary-dark);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chatbot-link:hover {
+            background: var(--accent-teal);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(6, 214, 160, 0.3);
+        }
+
+        /* ==================== NAVIGATION ==================== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            box-shadow: var(--shadow-md);
+            transition: background-color 0.3s ease;
+        }
+
+        body.light-mode .navbar {
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent-mint);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-teal);
+        }
+
+        /* ==================== HERO SECTION ==================== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-blue) 100%);
+            position: relative;
+            padding-top: 80px;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(6, 214, 160, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(14, 165, 233, 0.1) 0%, transparent 50%);
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            color: var(--white);
+        }
+
+        .hero-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            margin-bottom: 3rem;
+            opacity: 0.95;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-btn {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: var(--accent-mint);
+            color: var(--primary-dark);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .hero-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(6, 214, 160, 0.3);
+        }
+
+        .hero-visual {
+            margin-top: 4rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .hero-stat {
+            padding: 2rem;
+            background: rgba(6, 214, 160, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid rgba(6, 214, 160, 0.3);
+        }
+
+        .hero-stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--accent-mint);
+        }
+
+        .hero-stat-label {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+
+        /* ==================== SECTION BASE ==================== */
+        .section {
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: var(--bg-tertiary);
+            color: var(--accent-mint);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .section-title {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .section-description {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* ==================== PROBLEM SECTION ==================== */
+        .problem {
+            background: var(--bg-secondary);
+        }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .problem-card {
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s;
+            border: 1px solid var(--border-color);
+        }
+
+        .problem-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .problem-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-mint));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .problem-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .problem-text {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* ==================== SOLUTION SECTION ==================== */
+        .solution-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .flow-step {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .flow-number {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-blue));
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 800;
+            flex-shrink: 0;
+            box-shadow: 0 8px 16px rgba(10, 36, 99, 0.3);
+        }
+
+        .flow-content h3 {
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .flow-content p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* ==================== FOOTER ==================== */
+        .footer {
+            background: var(--primary-dark);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+
+        .footer-text {
+            margin-bottom: 0.5rem;
+        }
+
+        /* ==================== DEMO SECTION ==================== */
+        .demo {
+            background: var(--bg-primary);
+            padding: 6rem 2rem;
+        }
+
+        .dashboard {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .dashboard-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(6, 214, 160, 0.1);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent-mint);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-mint);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: var(--bg-tertiary);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            color: var(--text-tertiary);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-trend {
+            font-size: 0.85rem;
+            color: var(--accent-mint);
+        }
+
+        /* Category Filters */
+        .category-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .filter-btn:hover {
+            background: var(--bg-secondary);
+            border-color: var(--accent-mint);
+        }
+
+        .filter-btn.active {
+            background: var(--accent-mint);
+            color: var(--primary-dark);
+            border-color: var(--accent-mint);
+        }
+
+        /* Biomarkers Grid */
+        .biomarkers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .biomarker-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .biomarker-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent-mint);
+        }
+
+        .biomarker-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .biomarker-info-block {
+            flex: 1;
+        }
+
+        .biomarker-name-main {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .biomarker-category-tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(6, 214, 160, 0.15);
+            color: var(--accent-mint);
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .biomarker-status {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-optimal {
+            background: rgba(6, 214, 160, 0.15);
+            color: var(--accent-mint);
+        }
+
+        .status-warning {
+            background: rgba(14, 165, 233, 0.15);
+            color: var(--accent-teal);
+        }
+
+        .status-critical {
+            background: rgba(10, 36, 99, 0.15);
+            color: var(--primary-blue);
+        }
+
+        .biomarker-values {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .value-block h4 {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .value .unit {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-left: 0.25rem;
+        }
+
+        .biomarker-miniChart {
+            width: 100%;
+            height: 60px;
+            margin: 1rem 0;
+        }
+
+        .biomarker-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .stat-mini {
+            text-align: center;
+        }
+
+        .stat-mini-label {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-mini-value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Detailed Stats */
+        .detailed-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .detailed-stat-card {
+            background: var(--bg-tertiary);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .detailed-stat-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon-large {
+            font-size: 2rem;
+        }
+
+        .stat-info h4 {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .stat-main-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        /* Charts */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .chart-card {
+            background: var(--bg-tertiary);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 300px;
+        }
+
+        /* Correlation Matrix */
+        .correlation-matrix {
+            background: var(--bg-tertiary);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 3rem;
+            overflow-x: auto;
+        }
+
+        .correlation-matrix canvas {
+            min-width: 500px;
+        }
+
+        /* Data Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .data-table th {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .data-table td {
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .data-table tbody tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        .trend-indicator {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .trend-up {
+            background: rgba(6, 214, 160, 0.15);
+            color: var(--accent-mint);
+        }
+
+        .trend-down {
+            background: rgba(10, 36, 99, 0.15);
+            color: var(--primary-blue);
+        }
+
+        .trend-stable {
+            background: rgba(14, 165, 233, 0.15);
+            color: var(--accent-teal);
+        }
+
+        /* ==================== ARCHITECTURE DIAGRAM ==================== */
+        .architecture-diagram {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 1rem;
+            padding: 2rem;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+        }
+
+        .arch-component {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .arch-component:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-mint);
+            box-shadow: 0 8px 16px rgba(6, 214, 160, 0.2);
+        }
+
+        .arch-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .arch-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .arch-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .arch-arrow {
+            position: absolute;
+            right: -1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            color: var(--accent-mint);
+        }
+
+        .arch-component:last-child .arch-arrow {
+            display: none;
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .nav-right {
+                gap: 0.5rem;
+            }
+
+            .theme-toggle {
+                padding: 0.5rem;
+                font-size: 0.85rem;
+            }
+
+            .theme-toggle span:not(.theme-toggle-icon) {
+                display: none;
+            }
+
+            .hero-container {
+                padding: 3rem 1rem;
+            }
+
+            .hero-visual {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .hero-stat {
+                padding: 1.5rem;
+            }
+
+            .section {
+                padding: 4rem 1rem;
+            }
+
+            .problem-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .problem-card {
+                padding: 1.5rem;
+            }
+
+            .flow-step {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 1.5rem;
+            }
+
+            .flow-number {
+                margin: 0 auto;
+            }
+
+            .flow-content h3 {
+                font-size: 1.3rem;
+            }
+
+            .flow-content p {
+                font-size: 0.95rem;
+            }
+
+            .architecture-diagram {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .arch-arrow {
+                display: none;
+            }
+
+            .profile-demo {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .genetic-input-panel,
+            .profile-output-panel {
+                padding: 1.5rem;
+            }
+
+            .genetic-sequence {
+                font-size: 0.75rem;
+                padding: 1rem;
+                line-height: 1.6;
+            }
+
+            .processing-stage {
+                padding: 0.75rem;
+            }
+
+            .stage-output {
+                font-size: 0.7rem;
+            }
+
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-card {
+                padding: 1rem;
+            }
+
+            .dashboard {
+                padding: 1.5rem;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+
+            .metric-card {
+                padding: 1rem;
+            }
+
+            .category-filters {
+                gap: 0.5rem;
+            }
+
+            .filter-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .biomarkers-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .biomarker-card {
+                padding: 1rem;
+            }
+
+            .detailed-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .detailed-stat-card {
+                padding: 1rem;
+            }
+
+            .data-table {
+                font-size: 0.8rem;
+                display: block;
+                overflow-x: auto;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 0.75rem 0.5rem;
+                white-space: nowrap;
+            }
+
+            .correlation-matrix {
+                padding: 1rem;
+            }
+
+            .correlation-matrix canvas {
+                min-width: 600px;
+                height: 400px !important;
+            }
+
+            .footer {
+                padding: 2rem 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .section {
+                padding: 3rem 0.75rem;
+            }
+
+            .section-header {
+                margin-bottom: 2rem;
+            }
+
+            .section-tag {
+                font-size: 0.75rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .section-description {
+                font-size: 0.95rem;
+            }
+
+            .problem-card {
+                padding: 1rem;
+            }
+
+            .problem-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+
+            .flow-number {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metric-value {
+                font-size: 1.5rem;
+            }
+            
+            .biomarkers-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .biomarker-card {
+                padding: 1rem;
+            }
+
+            .biomarker-name-main {
+                font-size: 1rem;
+            }
+
+            .biomarker-values {
+                gap: 0.75rem;
+            }
+
+            .value {
+                font-size: 1.2rem;
+            }
+
+            .detailed-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-main-value {
+                font-size: 2rem;
+            }
+
+            .correlation-matrix {
+                padding: 0.75rem;
+            }
+
+            .correlation-matrix canvas {
+                min-width: 550px;
+            }
+
+            .genetic-input-panel,
+            .profile-output-panel {
+                padding: 1rem;
+            }
+
+            .genetic-sequence {
+                font-size: 0.7rem;
+                padding: 0.75rem;
+                max-height: 150px;
+            }
+
+            .process-btn {
+                padding: 0.875rem;
+                font-size: 0.95rem;
+            }
+
+            .processing-stage {
+                padding: 0.75rem;
+            }
+
+            .stage-title {
+                font-size: 0.85rem;
+            }
+
+            .stage-output {
+                font-size: 0.65rem;
+            }
+
+            .final-profile {
+                padding: 1rem;
+            }
+
+            .profile-id-display {
+                font-size: 1rem;
+                padding: 0.75rem;
+            }
+        }
+
+        /* ==================== GENETIC PROFILE DEMO ==================== */
+        .profile-demo {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .genetic-input-panel {
+            background: var(--bg-tertiary);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .genetic-sequence {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+            max-height: 200px;
+            overflow-y: auto;
+            overflow-x: auto;
+            word-break: break-all;
+        }
+
+        .genetic-marker {
+            color: var(--accent-mint);
+            font-weight: bold;
+        }
+
+        .process-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-mint));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .process-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(6, 214, 160, 0.3);
+        }
+
+        .process-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .profile-output-panel {
+            background: var(--bg-terciario);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .processing-stage {
+            padding: 1rem;
+            background: var(--card-bg);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+            opacity: 0.4;
+        }
+
+        .processing-stage.active {
+            opacity: 1;
+            border-left-color: var(--accent-mint);
+            background: rgba(6, 214, 160, 0.05);
+        }
+
+        .processing-stage.complete {
+            opacity: 1;
+            border-left-color: var(--accent-mint);
+        }
+
+        .stage-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .stage-output {
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            word-break: break-all;
+        }
+
+        .final-profile {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 2px solid var(--accent-mint);
+            margin-top: 1rem;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.5s;
+        }
+
+        .final-profile.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .profile-id-display {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            color: var(--accent-mint);
+            font-weight: bold;
+            text-align: center;
+            padding: 1rem;
+            background: rgba(6, 214, 160, 0.1);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            /* ...existing code... */
+
+            .profile-demo {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .genetic-input-panel,
+            .profile-output-panel {
+                padding: 1.5rem;
+            }
+
+            .genetic-sequence {
+                font-size: 0.75rem;
+                padding: 1rem;
+                line-height: 1.6;
+            }
+
+            .processing-stage {
+                padding: 0.75rem;
+            }
+
+            .stage-output {
+                font-size: 0.7rem;
+            }
+
+            /* ...existing code... */
+        }
+
+        @media (max-width: 480px) {
+            /* ...existing code... */
+
+            .genetic-input-panel,
+            .profile-output-panel {
+                padding: 1rem;
+            }
+
+            .genetic-sequence {
+                font-size: 0.7rem;
+                padding: 0.75rem;
+                max-height: 150px;
+            }
+
+            .process-btn {
+                padding: 0.875rem;
+                font-size: 0.95rem;
+            }
+
+            .processing-stage {
+                padding: 0.75rem;
+            }
+
+            .stage-title {
+                font-size: 0.85rem;
+            }
+
+            .stage-output {
+                font-size: 0.65rem;
+            }
+
+            .final-profile {
+                padding: 1rem;
+            }
+
+            .profile-id-display {
+                font-size: 1rem;
+                padding: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">BioSense</a>
+            <div class="nav-right">
+                <ul class="nav-links">
+                    <li><a href="#problema">Problema</a></li>
+                    <li><a href="#solucion">Solución</a></li>
+                    <li><a href="#perfiles">Perfiles Anónimos</a></li>
+                    <li><a href="#demo">Panel de Control</a></li>
+                </ul>
+                <a href="http://hormiguita.es:3000/chatbot/bee60730-2d66-46ea-8ac5-f57d2ce451bf" target="_blank" class="chatbot-link">
+                    <span>💬</span>
+                    <span>Asistente IA</span>
+                </a>
+                <div class="theme-toggle" id="themeToggle">
+                    <span class="theme-toggle-icon" id="themeIcon">☀️</span>
+                    <span>Tema</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <h1 class="hero-title">BioSense</h1>
+            <p class="hero-subtitle">
+                Anonimización, análisis y predicción segura de datos biomédicos mediante procesamiento distribuido y modelado estadístico.
+            </p>
+            <a href="#demo" class="hero-btn">Ver Demo Técnica</a>
+            
+            <div class="hero-visual">
+                <div class="hero-stat">
+                    <div class="hero-stat-value">1,247</div>
+                    <div class="hero-stat-label">Cohortes Procesadas</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">96.8%</div>
+                    <div class="hero-stat-label">Precisión Predictiva</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">24/7</div>
+                    <div class="hero-stat-label">Monitorización Continua</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="section problem" id="problema">
+        <div class="section-header">
+            <span class="section-tag">Análisis del Problema</span>
+            <h2 class="section-title">Desafíos en la Gestión de Datos Biomédicos</h2>
+            <p class="section-description">
+                El ecosistema actual de biomarcadores enfrenta limitaciones técnicas críticas que impiden el aprovechamiento óptimo de los datos generados.
+            </p>
+        </div>
+
+        <div class="problem-grid">
+            <div class="problem-card">
+                <div class="problem-icon" style="background: linear-gradient(135deg, var(--primary-blue), var(--accent-mint)); color: white; font-weight: bold;">01</div>
+                <h3 class="problem-title">Fragmentación de Datos</h3>
+                <p class="problem-text">
+                    Los datos biomédicos se almacenan en sistemas heterogéneos sin interoperabilidad. 
+                    Más del 80% de los hospitales europeos utilizan múltiples formatos incompatibles (HL7 v2, ASTM, FHIR parcial, CSV propietarios).
+                </p>
+                <p class="problem-text" style="margin-top: 0.75rem; font-size: 0.9rem; opacity: 0.9;">
+                    <strong>Impacto:</strong> El 70% de los centros duplica la entrada de datos entre sistemas (EHR Interoperability Report, 2024).
+                    El 90% de dispositivos wearables usa APIs privadas, impidiendo integración directa.
+                </p>
+            </div>
+
+            <div class="problem-card">
+                <div class="problem-icon" style="background: linear-gradient(135deg, var(--primary-blue), var(--accent-mint)); color: white; font-weight: bold;">02</div>
+                <h3 class="problem-title">Riesgos de Privacidad</h3>
+                <p class="problem-text">
+                    La transmisión y almacenamiento de información sensible carece de protocolos de anonimización robustos. 
+                    El 46% de instituciones sanitarias europeas ha sufrido incidentes de exposición de datos en los últimos tres años (ENISA, 2023).
+                </p>
+                <p class="problem-text" style="margin-top: 0.75rem; font-size: 0.9rem; opacity: 0.9;">
+                    <strong>Impacto:</strong> El 80% de dispositivos médicos conectados transmite sin cifrado end-to-end (FDA, 2024).
+                    Los ataques ransomware crecieron 130% entre 2020-2024 en laboratorios clínicos.
+                </p>
+            </div>
+
+            <div class="problem-card">
+                <div class="problem-icon" style="background: linear-gradient(135deg, var(--primary-blue), var(--accent-mint)); color: white; font-weight: bold;">03</div>
+                <h3 class="problem-title">Análisis Predictivo Limitado</h3>
+                <p class="problem-text">
+                    Ausencia de infraestructuras que integren modelado estadístico sobre series temporales de biomarcadores. 
+                    El 70% de herramientas predictivas actuales se basan en datasets estáticos, no en datos continuos (Nature Digital Medicine, 2024).
+                </p>
+                <p class="problem-text" style="margin-top: 0.75rem; font-size: 0.9rem; opacity: 0.9;">
+                    <strong>Impacto:</strong> Los sistemas desperdician hasta 55% de datos generados por falta de integración (McKinsey, 2023).
+                    Solo 10% de proyectos de IA biomédica combinan laboratorio con sensores continuos.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section class="section" id="solucion">
+        <div class="section-header">
+            <span class="section-tag">Arquitectura del Sistema</span>
+            <h2 class="section-title">Flujo de Procesamiento BioSense</h2>
+            <p class="section-description">
+                Pipeline end-to-end para captura, anonimización, procesamiento y predicción de datos biomédicos.
+            </p>
+        </div>
+
+        <div class="solution-flow">
+            <div class="flow-step">
+                <div class="flow-number">1</div>
+                <div class="flow-content">
+                    <h3>Captura de Datos</h3>
+                    <p>
+                        Recopilación automatizada desde dispositivos médicos certificados, sistemas de laboratorio y sensores portables. 
+                        Los datos se transmiten mediante protocolos seguros (HTTPS/TLS 1.3) con validación de integridad mediante checksums criptográficos.
+                    </p>
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <div class="flow-number">2</div>
+                <div class="flow-content">
+                    <h3>Anonimización y Normalización</h3>
+                    <p>
+                        Eliminación de identificadores directos e indirectos mediante algoritmos de k-anonimato y diferential privacy. 
+                        Transformación de datos crudos a formatos estandarizados con normalización Z-score para análisis estadístico.
+                    </p>
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <div class="flow-number">3</div>
+                <div class="flow-content">
+                    <h3>Procesamiento Distribuido</h3>
+                    <p>
+                        Almacenamiento en infraestructura cloud con redundancia geográfica. 
+                        Los datos se procesan en clusters distribuidos con balanceo de carga dinámico para garantizar escalabilidad horizontal.
+                    </p>
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <div class="flow-number">4</div>
+                <div class="flow-content">
+                    <h3>Modelado Predictivo</h3>
+                    <p>
+                        Aplicación de modelos estadísticos (regresión multivariante, ARIMA, redes neuronales LSTM) sobre series temporales de biomarcadores. 
+                        Entrenamiento continuo con validación cruzada estratificada para minimizar overfitting.
+                    </p>
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <div class="flow-number">5</div>
+                <div class="flow-content">
+                    <h3>Visualización y Reporting</h3>
+                    <p>
+                        Interfaz web para profesionales sanitarios con dashboards interactivos. 
+                        Generación de reportes técnicos con proyecciones estadísticas, intervalos de confianza y alertas basadas en umbrales configurables.
+                    </p>
+                    
+                    <div class="architecture-diagram">
+                        <div class="arch-component">
+                            <div class="arch-icon">📊</div>
+                            <div class="arch-title">Dashboard Web</div>
+                            <div class="arch-desc">Interfaz interactiva con visualizaciones en tiempo real</div>
+                            <div class="arch-arrow">→</div>
+                        </div>
+                        <div class="arch-component">
+                            <div class="arch-icon">🔌</div>
+                            <div class="arch-title">REST API</div>
+                            <div class="arch-desc">Endpoints seguros para integración externa</div>
+                            <div class="arch-arrow">→</div>
+                        </div>
+                        <div class="arch-component">
+                            <div class="arch-icon">📄</div>
+                            <div class="arch-title">Exportación</div>
+                            <div class="arch-desc">Reportes en PDF, CSV y formatos HL7</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Anonymous Profiles Section -->
+    <section class="section" style="background: var(--bg-secondary);" id="perfiles">
+        <div class="section-header">
+            <span class="section-tag">Seguridad y Privacidad</span>
+            <h2 class="section-title">Perfiles Anónimos Cifrados</h2>
+            <p class="section-description">
+                Generación de identificadores únicos basados en huella genética sin almacenar datos personales
+            </p>
+        </div>
+
+        <!-- Pre-created Profiles Grid -->
+        <div style="margin-bottom: 4rem;">
+            <h3 style="font-size: 1.5rem; color: var(--text-primary); margin-bottom: 2rem; text-align: center;">
+                Perfiles Generados
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                <!-- Profile 1 -->
+                <div style="background: var(--card-bg); border-radius: 12px; padding: 1.5rem; border: 1px solid var(--border-color);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h4 style="color: var(--text-primary); font-weight: 700;">Perfil #001</h4>
+                        <span style="padding: 0.25rem 0.75rem; background: rgba(6, 214, 160, 0.15); color: var(--accent-mint); border-radius: 12px; font-size: 0.75rem;">✓ Activo</span>
+                    </div>
+                    <div style="font-family: 'Courier New', monospace; font-size: 0.75rem; color: var(--text-secondary); word-break: break-all; margin-bottom: 1rem;">
+                        <div style="margin-bottom: 0.5rem;"><strong style="color: var(--accent-mint);">ID:</strong> BIO_A7F3C9D8E2B1</div>
+                        <div style="margin-bottom: 0.5rem;"><strong style="color: var(--accent-teal);">Hash:</strong> 3a8f...d2c1</div>
+                        <div><strong style="color: var(--primary-blue);">Marcadores:</strong> CGTA, GATC, TCAG</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.8rem;">
+                        <div><span style="color: var(--text-tertiary);">HbA1c:</span> <strong>6.8%</strong></div>
+                        <div><span style="color: var(--text-tertiary);">LDL:</span> <strong>145</strong></div>
+                        <div><span style="color: var(--text-tertiary);">TSH:</span> <strong>2.1</strong></div>
+                        <div><span style="color: var(--text-tertiary);">Crea:</span> <strong>0.9</strong></div>
+                    </div>
+                </div>
+
+                <!-- Profile 2 -->
+                <div style="background: var(--card-bg); border-radius: 12px; padding: 1.5rem; border: 1px solid var(--border-color);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h4 style="color: var(--text-primary); font-weight: 700;">Perfil #002</h4>
+                        <span style="padding: 0.25rem 0.75rem; background: rgba(6, 214, 160, 0.15); color: var(--accent-mint); border-radius: 12px; font-size: 0.75rem;">✓ Activo</span>
+                    </div>
+                    <div style="font-family: 'Courier New', monospace; font-size: 0.75rem; color: var(--text-secondary); word-break: break-all; margin-bottom: 1rem;">
+                        <div style="margin-bottom: 0.5rem;"><strong style="color: var(--accent-mint);">ID:</strong> BIO_B4E2D7F9A1C3</div>
+                        <div style="margin-bottom: 0.5rem;"><strong style="color: var(--accent-teal);">Hash:</strong> 8d2f...a9b4</div>
+                        <div><strong style="color: var(--primary-blue);">Marcadores:</strong> ATCG, TAGC, CAGT</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.8rem;">
+                        <div><span style="color: var(--text-tertiary);">HbA1c:</span> <strong>5.4%</strong></div>
+                        <div><span style="color: var(--text-tertiary);">LDL:</span> <strong>98</strong></div>
+                        <div><span style="color: var(--text-tertiary);">TSH:</span> <strong>1.8</strong></div>
+                        <div><span style="color: var(--text-tertiary);">Crea:</span> <strong>0.8</strong></div>
+                    </div>
+                </div>
+
+                <!-- Profile 3 -->
+                <div style="background: var(--card-bg); border-radius: 12px; padding: 1.5rem; border: 1px solid var(--border-color);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h4 style="color: var(--text-primary); font-weight: 700;">Perfil #003</h4>
+                        <span style="padding: 0.25rem 0.75rem; background: rgba(14, 165, 233, 0.15); color: var(--accent-teal); border-radius: 12px; font-size: 0.75rem;">⚠ Revisión</span>
+                    </div>
+                    <div style="font-family: 'Courier New', monospace; font-size: 0.75rem; color: var(--text-secondary); word-break: break-all; margin-bottom: 1rem;">
+                        <div style="margin-bottom: 0.5rem;"><strong style="color: var(--accent-mint);">ID:</strong> BIO_C9A1F8D3E5B7</div>
+                        <div style="margin-bottom: 0.5rem;"><strong style="color: var(--accent-teal);">Hash:</strong> 5c7a...e3f8</div>
+                        <div><strong style="color: var(--primary-blue);">Marcadores:</strong> GCTA, ACTG, TCGA</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.8rem;">
+                        <div><span style="color: var(--text-tertiary);">HbA1c:</span> <strong>7.2%</strong></div>
+                        <div><span style="color: var(--text-tertiary);">LDL:</span> <strong>168</strong></div>
+                        <div><span style="color: var(--text-tertiary);">TSH:</span> <strong>3.9</strong></div>
+                        <div><span style="color: var(--text-tertiary);">Crea:</span> <strong>1.2</strong></div>
+                    </div>
+                </div>
+
+                <!-- Profile 4 -->
+                <div style="background: var(--card-bg); border-radius: 12px; padding: 1.5rem; border: 1px solid var(--border-color);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h4 style="color: var(--text-primary); font-weight: 700;">Perfil #004</h4>
+                        <span style="padding: 0.25rem 0.75rem; background: rgba(6, 214, 160, 0.15); color: var(--accent-mint); border-radius: 12px; font-size: 0.75rem;">✓ Activo</span>
+                    </div>
+                    <div style="font-family: 'Courier New', monospace; font-size: 0.75rem; color: var(--text-secondary); word-break: break-all; margin-bottom: 1rem;">
+                        <div style="margin-bottom: 0.5rem;"><strong style="color: var(--accent-mint);">ID:</strong> BIO_D5F1A9C7B3E2</div>
+                        <div style="margin-bottom: 0.5rem;"><strong style="color: var(--accent-teal);">Hash:</strong> 9e1b...f6d3</div>
+                        <div><strong style="color: var(--primary-blue);">Marcadores:</strong> GACT, CATG, TGCA</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.8rem;">
+                        <div><span style="color: var(--text-tertiary);">HbA1c:</span> <strong>5.9%</strong></div>
+                        <div><span style="color: var(--text-tertiary);">LDL:</span> <strong>112</strong></div>
+                        <div><span style="color: var(--text-tertiary);">TSH:</span> <strong>2.5</strong></div>
+                        <div><span style="color: var(--text-tertiary);">Crea:</span> <strong>1.0</strong></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-demo">
+            <!-- Input Panel -->
+            <div class="genetic-input-panel">
+                <h3 style="font-size: 1.3rem; color: var(--text-primary); margin-bottom: 1.5rem;">
+                    Datos de Entrada
+                </h3>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+                        Muestra de Secuencia Genética
+                    </h4>
+                    <div class="genetic-sequence" id="geneticSequence">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+                        Biomarcadores Actuales
+                    </h4>
+                    <div style="background: var(--card-bg); border-radius: 8px; padding: 1rem; border: 1px solid var(--border-color);">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; font-size: 0.85rem;">
+                            <div>
+                                <span style="color: var(--text-tertiary);">HbA1c:</span>
+                                <span style="color: var(--text-primary); font-weight: bold;"> 6.8%</span>
+                            </div>
+                            <div>
+                                <span style="color: var(--text-tertiary);">LDL:</span>
+                                <span style="color: var(--text-primary); font-weight: bold;"> 145 mg/dL</span>
+                            </div>
+                            <div>
+                                <span style="color: var(--text-tertiary);">TSH:</span>
+                                <span style="color: var(--text-primary); font-weight: bold;"> 2.1 mIU/L</span>
+                            </div>
+                            <div>
+                                <span style="color: var(--text-tertiary);">Creatinina:</span>
+                                <span style="color: var(--text-primary); font-weight: bold;"> 0.9 mg/dL</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="process-btn" id="generateProfileBtn">
+                    Generar Perfil Anónimo
+                </button>
+            </div>
+
+            <!-- Output Panel -->
+            <div class="profile-output-panel">
+                <h3 style="font-size: 1.3rem; color: var(--text-primary); margin-bottom: 1.5rem;">
+                    Proceso de Anonimización
+                </h3>
+
+                <div class="processing-stage" id="stage1">
+                    <div class="stage-title">1. Extracción de Marcadores Genéticos</div>
+                    <div class="stage-output" id="stage1Output">Esperando inicio...</div>
+                </div>
+
+                <div class="processing-stage" id="stage2">
+                    <div class="stage-title">2. Hash Criptográfico (SHA-256)</div>
+                    <div class="stage-output" id="stage2Output">Esperando inicio...</div>
+                </div>
+
+                <div class="processing-stage" id="stage3">
+                    <div class="stage-title">3. Integración con Biomarcadores</div>
+                    <div class="stage-output" id="stage3Output">Esperando inicio...</div>
+                </div>
+
+                <div class="processing-stage" id="stage4">
+                    <div class="stage-title">4. Aplicación de k-Anonimato y Cifrado</div>
+                    <div class="stage-output" id="stage4Output">Esperando inicio...</div>
+                </div>
+
+                <div class="final-profile" id="finalProfile">
+                    <h4 style="font-size: 1.1rem; color: var(--text-primary); margin-bottom: 1rem; text-align: center;">
+                        Perfil Anónimo Generado
+                    </h4>
+                    <div class="profile-id-display" id="profileIdDisplay">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.85rem; font-family: 'Courier New', monospace;">
+                        <div>
+                            <div style="color: var(--text-tertiary);">k-anonimato:</div>
+                            <div style="color: var(--accent-mint); font-weight: bold;">k ≥ 5</div>
+                        </div>
+                        <div>
+                            <div style="color: var(--text-tertiary);">Diff. Privacy:</div>
+                            <div style="color: var(--accent-teal); font-weight: bold;">ε = 0.1</div>
+                        </div>
+                        <div>
+                            <div style="color: var(--text-tertiary);">Cifrado:</div>
+                            <div style="color: var(--primary-blue); font-weight: bold;">AES-256-GCM</div>
+                        </div>
+                        <div>
+                            <div style="color: var(--text-tertiary);">Estado:</div>
+                            <div style="color: var(--accent-mint); font-weight: bold;">✓ Validado</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 3rem; padding: 1.5rem; background: rgba(6, 214, 160, 0.1); border-radius: 12px; border: 1px solid rgba(6, 214, 160, 0.3); text-align: center;">
+            <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7;">
+                <strong style="color: var(--accent-mint);">Nota importante:</strong> 
+                El proceso es unidireccional e irreversible. La huella genética original no puede recuperarse desde el perfil anónimo, 
+                garantizando cumplimiento total con GDPR, HIPAA y normativas de protección de datos biomédicos.
+            </p>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="demo" id="demo">
+        <div class="section">
+            <div class="section-header">
+                <span class="section-tag" style="background: rgba(255, 255, 255, 0.2); color: var(--accent-mint);">Entorno de Simulación</span>
+                <h2 class="section-title">Panel de Control BioSense</h2>
+                <p class="section-description">
+                    Sistema de monitorización en tiempo real con procesamiento estadístico avanzado
+                </p>
+            </div>
+
+            <div class="dashboard">
+                <div class="dashboard-header">
+                    <h3 class="dashboard-title">Panel de Monitorización Completo</h3>
+                    <div class="status-badge">
+                        <span class="status-dot"></span>
+                        DATOS EN TIEMPO REAL
+                    </div>
+                </div>
+
+                <!-- Metrics Grid -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">Muestras Procesadas</div>
+                        <div class="metric-value" id="samplesProcessed">0</div>
+                        <div class="metric-trend">+127 última hora</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Biomarcadores Activos</div>
+                        <div class="metric-value" id="activeBiomarkers">0</div>
+                        <div class="metric-trend">100% operativos</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Correlación Media</div>
+                        <div class="metric-value" id="avgCorrelation">0.00</div>
+                        <div class="metric-trend">σ = 0.12</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Latencia Promedio</div>
+                        <div class="metric-value">42<span style="font-size: 1rem;">ms</span></div>
+                        <div class="metric-trend">-8ms vs baseline</div>
+                    </div>
+                </div>
+
+                <!-- Category Filters -->
+                <div class="category-filters">
+                    <button class="filter-btn active" data-category="all">Todos</button>
+                    <button class="filter-btn" data-category="metabolico">Metabólico</button>
+                    <button class="filter-btn" data-category="cardiovascular">Cardiovascular</button>
+                    <button class="filter-btn" data-category="hepatico">Hepático</button>
+                    <button class="filter-btn" data-category="renal">Renal</button>
+                    <button class="filter-btn" data-category="endocrino">Endocrino</button>
+                    <button class="filter-btn" data-category="inmunologico">Inmunológico</button>
+                </div>
+
+                <!-- Expanded Biomarkers Grid -->
+                <div class="biomarkers-grid" id="biomarkersGrid">
+                    <!-- Populated by JavaScript -->
+                </div>
+
+                <!-- Detailed Statistics -->
+                <div class="detailed-stats">
+                    <div class="detailed-stat-card">
+                        <div class="detailed-stat-header">
+                            <div class="stat-icon-large" style="font-weight: bold; color: var(--accent-mint);">σ</div>
+                            <div class="stat-info">
+                                <h4>Desviación Estándar Global</h4>
+                            </div>
+                        </div>
+                        <div class="stat-main-value" id="globalStdDev">0.00</div>
+                    </div>
+                    <div class="detailed-stat-card">
+                        <div class="detailed-stat-header">
+                            <div class="stat-icon-large" style="font-weight: bold; color: var(--accent-teal);">CV</div>
+                            <div class="stat-info">
+                                <h4>Coeficiente de Variación</h4>
+                            </div>
+                        </div>
+                        <div class="stat-main-value" id="coeffVariation">0.00<span style="font-size: 1rem;">%</span></div>
+                    </div>
+                    <div class="detailed-stat-card">
+                        <div class="detailed-stat-header">
+                            <div class="stat-icon-large" style="font-weight: bold; color: var(--primary-blue);">Δ</div>
+                            <div class="stat-info">
+                                <h4>Tendencia Dominante</h4>
+                            </div>
+                        </div>
+                        <div class="stat-main-value" id="dominantTrend" style="font-size: 1.2rem;">--</div>
+                    </div>
+                    <div class="detailed-stat-card">
+                        <div class="detailed-stat-header">
+                            <div class="stat-icon-large" style="font-weight: bold; color: var(--accent-mint);">!</div>
+                            <div class="stat-info">
+                                <h4>Alertas Activas</h4>
+                            </div>
+                        </div>
+                        <div class="stat-main-value" id="activeAlerts">0</div>
+                    </div>
+                </div>
+
+                <!-- Correlation Matrix - MOVED HERE -->
+                <div class="correlation-matrix">
+                    <h4 class="chart-title">Matriz de Correlación entre Biomarcadores</h4>
+                    <canvas id="correlationMatrix" style="width: 100%; height: 400px;"></canvas>
+                </div>
+
+                <!-- Charts -->
+                <div class="charts-container">
+                    <div class="chart-card">
+                        <h4 class="chart-title">Evolución Temporal - Serie de 6 Meses</h4>
+                        <canvas id="timeSeriesChart" class="chart-canvas"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h4 class="chart-title">Distribución de Estados</h4>
+                        <canvas id="distributionChart" class="chart-canvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Data Table -->
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Biomarcador</th>
+                            <th>Categoría</th>
+                            <th>Valor Actual</th>
+                            <th>Rango de Referencia</th>
+                            <th>Tendencia (30d)</th>
+                            <th>Predicción (7d)</th>
+                            <th>Z-Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="biomarkersTable">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-title">BioSense Platform</div>
+            <p class="footer-text">Sistema de análisis predictivo de biomarcadores</p>
+            <p class="footer-text">Arquitectura: Microservicios distribuidos con procesamiento en tiempo real</p>
+            <p class="footer-text" style="margin-top: 2rem; opacity: 0.6;">© 2024 - Proyecto de Investigación Técnica</p>
+        </div>
+    </footer>
+
+    <script>
+        // ==================== THEME TOGGLE ====================
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const body = document.body;
+
+        // Check for saved theme preference or default to dark mode
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        if (currentTheme === 'light') {
+            body.classList.add('light-mode');
+            themeIcon.textContent = '🌙';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            
+            if (body.classList.contains('light-mode')) {
+                themeIcon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                themeIcon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+
+            // Redraw charts with new theme
+            setTimeout(() => {
+                drawCorrelationMatrix();
+                drawTimeSeriesChart();
+                drawDistributionChart();
+            }, 100);
+        });
+
+        // ==================== CHATBOT BUTTON - REMOVED ====================
+        // Ya no se necesita el listener personalizado, Flowise maneja todo
+
+        // ==================== EXPANDED DATA MODEL ====================
+        const biomarkersData = [
+            // Metabólico
+            { id: 1, name: 'Hemoglobina A1c', category: 'metabolico', unit: '%', value: 6.8, range: '4.0-5.6', history: [7.2, 7.0, 6.9, 6.8, 6.7, 6.8], status: 'warning' },
+            { id: 2, name: 'Glucosa en Ayunas', category: 'metabolico', unit: 'mg/dL', value: 102, range: '70-100', history: [110, 108, 105, 103, 102, 102], status: 'warning' },
+            { id: 3, name: 'Insulina Basal', category: 'metabolico', unit: 'μU/mL', value: 8.5, range: '2.6-24.9', history: [9.2, 9.0, 8.8, 8.7, 8.6, 8.5], status: 'optimal' },
+            
+            // Cardiovascular
+            { id: 4, name: 'Colesterol LDL', category: 'cardiovascular', unit: 'mg/dL', value: 145, range: '<100', history: [160, 155, 152, 148, 145, 145], status: 'warning' },
+            { id: 5, name: 'Colesterol HDL', category: 'cardiovascular', unit: 'mg/dL', value: 52, range: '>40', history: [48, 49, 50, 51, 51, 52], status: 'optimal' },
+            { id: 6, name: 'Triglicéridos', category: 'cardiovascular', unit: 'mg/dL', value: 155, range: '<150', history: [180, 170, 165, 160, 157, 155], status: 'warning' },
+            { id: 7, name: 'Homocisteína', category: 'cardiovascular', unit: 'μmol/L', value: 11.2, range: '5-15', history: [12.5, 12.0, 11.8, 11.5, 11.3, 11.2], status: 'optimal' },
+            
+            // Hepático
+            { id: 8, name: 'ALT (GPT)', category: 'hepatico', unit: 'U/L', value: 32, range: '7-56', history: [38, 36, 35, 34, 33, 32], status: 'optimal' },
+            { id: 9, name: 'AST (GOT)', category: 'hepatico', unit: 'U/L', value: 28, range: '10-40', history: [32, 31, 30, 29, 28, 28], status: 'optimal' },
+            { id: 10, name: 'Bilirrubina Total', category: 'hepatico', unit: 'mg/dL', value: 0.8, range: '0.1-1.2', history: [0.9, 0.9, 0.85, 0.82, 0.8, 0.8], status: 'optimal' },
+            { id: 11, name: 'Fosfatasa Alcalina', category: 'hepatico', unit: 'U/L', value: 72, range: '30-120', history: [78, 76, 75, 74, 73, 72], status: 'optimal' },
+            
+            // Renal
+            { id: 12, name: 'Creatinina', category: 'renal', unit: 'mg/dL', value: 0.9, range: '0.7-1.3', history: [0.95, 0.93, 0.91, 0.90, 0.89, 0.90], status: 'optimal' },
+            { id: 13, name: 'Ácido Úrico', category: 'renal', unit: 'mg/dL', value: 5.8, range: '3.5-7.2', history: [6.2, 6.1, 6.0, 5.9, 5.8, 5.8], status: 'optimal' },
+            { id: 14, name: 'TFG (eGFR)', category: 'renal', unit: 'mL/min', value: 95, range: '>90', history: [92, 93, 94, 94, 95, 95], status: 'optimal' },
+            
+            // Endocrino
+            { id: 15, name: 'TSH', category: 'endocrino', unit: 'mIU/L', value: 2.1, range: '0.4-4.0', history: [2.3, 2.2, 2.2, 2.1, 2.0, 2.1], status: 'optimal' },
+            { id: 16, name: 'T4 Libre', category: 'endocrino', unit: 'ng/dL', value: 1.3, range: '0.8-1.8', history: [1.2, 1.25, 1.28, 1.29, 1.3, 1.3], status: 'optimal' },
+            { id: 17, name: 'Cortisol', category: 'endocrino', unit: 'μg/dL', value: 12.5, range: '6-23', history: [14.0, 13.5, 13.0, 12.8, 12.6, 12.5], status: 'optimal' },
+            { id: 18, name: 'Vitamina D', category: 'endocrino', unit: 'ng/mL', value: 28, range: '30-100', history: [22, 24, 25, 26, 27, 28], status: 'critical' },
+            
+            // Inmunológico
+            { id: 19, name: 'Proteína C Reactiva', category: 'inmunologico', unit: 'mg/L', value: 4.2, range: '<3.0', history: [5.1, 4.8, 4.5, 4.3, 4.2, 4.2], status: 'warning' },
+            { id: 20, name: 'Ferritina', category: 'inmunologico', unit: 'ng/mL', value: 125, range: '30-400', history: [110, 115, 118, 120, 123, 125], status: 'optimal' },
+            { id: 21, name: 'Linfocitos', category: 'inmunologico', unit: '%', value: 32.5, range: '20-40', history: [30.2, 31.0, 31.5, 32.0, 32.3, 32.5], status: 'optimal' },
+            { id: 22, name: 'Neutrófilos', category: 'inmunologico', unit: '%', value: 58.3, range: '40-70', history: [62.0, 60.5, 59.8, 59.0, 58.6, 58.3], status: 'optimal' },
+        ];
+
+        let samplesCount = 1247;
+        let currentFilter = 'all';
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            renderBiomarkersGrid();
+            renderTable();
+            drawCorrelationMatrix();
+            drawTimeSeriesChart();
+            drawDistributionChart();
+            startLiveUpdates();
+            updateMetrics();
+            updateDetailedStats();
+            setupFilters();
+                       displayGeneticSequence();
+            
+            const generateBtn = document.getElementById('generateProfileBtn');
+            if (generateBtn) {
+                generateBtn.addEventListener('click', generateAnonymousProfile);
+            }
+        });
+
+        // ==================== BIOMARKERS GRID RENDERING ====================
+        function renderBiomarkersGrid() {
+            const container = document.getElementById('biomarkersGrid');
+            const filtered = currentFilter === 'all' 
+                ? biomarkersData 
+                : biomarkersData.filter(b => b.category === currentFilter);
+            
+            container.innerHTML = filtered.map(bio => {
+                const trend = calculateTrend(bio.history);
+                const zScore = calculateZScore(bio);
+                
+                const statusSymbols = {
+                    'optimal': '✓',
+                    'warning': '⚠',
+                    'critical': '●'
+                };
+                
+                const statusTexts = {
+                    'optimal': 'Óptimo',
+                    'warning': 'Atención',
+                    'critical': 'Crítico'
+                };
+                
+                return `
+                    <div class="biomarker-card">
+                        <div class="biomarker-header">
+                            <div class="biomarker-info-block">
+                                <div class="biomarker-name-main">${bio.name}</div>
+                                <span class="biomarker-category-tag">${getCategoryName(bio.category)}</span>
+                            </div>
+                            <div class="biomarker-status status-${bio.status}">
+                                ${statusSymbols[bio.status]} ${statusTexts[bio.status]}
+                            </div>
+                        </div>
+                        
+                        <div class="biomarker-values">
+                            <div class="value-block">
+                                <h4>Valor Actual</h4>
+                                <div class="value">${bio.value}<span class="unit">${bio.unit}</span></div>
+                            </div>
+                            <div class="value-block">
+                                <h4>Rango Normal</h4>
+                                <div class="value" style="font-size: 1rem;">${bio.range} ${bio.unit}</div>
+                            </div>
+                        </div>
+                        
+                        <canvas class="biomarker-miniChart" id="mini-${bio.id}"></canvas>
+                        
+                        <div class="biomarker-stats">
+                            <div class="stat-mini">
+                                <div class="stat-mini-label">Tendencia</div>
+                                <div class="stat-mini-value">${trend.symbol} ${trend.value}%</div>
+                            </div>
+                            <div class="stat-mini">
+                                <div class="stat-mini-label">Z-Score</div>
+                                <div class="stat-mini-value">${zScore}</div>
+                            </div>
+                            <div class="stat-mini">
+                                <div class="stat-mini-label">Promedio</div>
+                                <div class="stat-mini-value">${calculateAvg(bio.history).toFixed(1)}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Draw mini charts
+            filtered.forEach(bio => {
+                setTimeout(() => drawMiniChart(`mini-${bio.id}`, bio.history), 50);
+            });
+        }
+
+        // ==================== MINI CHART ====================
+        function drawMiniChart(canvasId, data) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = 60;
+            
+            const max = Math.max(...data);
+            const min = Math.min(...data);
+            const range = max - min || 1;
+            const padding = 5;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Area
+            ctx.fillStyle = 'rgba(6, 214, 160, 0.15)';
+            ctx.beginPath();
+            data.forEach((val, i) => {
+                const x = (i / (data.length - 1)) * (canvas.width - 2 * padding) + padding;
+                const y = canvas.height - padding - ((val - min) / range) * (canvas.height - 2 * padding);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.lineTo(canvas.width - padding, canvas.height - padding);
+            ctx.lineTo(padding, canvas.height - padding);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Line
+            ctx.strokeStyle = '#06D6A0';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            data.forEach((val, i) => {
+                const x = (i / (data.length - 1)) * (canvas.width - 2 * padding) + padding;
+                const y = canvas.height - padding - ((val - min) / range) * (canvas.height - 2 * padding);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+        }
+
+        // ==================== TABLE RENDERING ====================
+        function renderTable() {
+            const tbody = document.getElementById('biomarkersTable');
+            tbody.innerHTML = biomarkersData.map(bio => {
+                const trend = calculateTrend(bio.history);
+                const prediction = (bio.value * (1 + (Math.random() - 0.5) * 0.1)).toFixed(2);
+                const zScore = calculateZScore(bio);
+                
+                return `
+                    <tr>
+                        <td><strong>${bio.name}</strong></td>
+                        <td>${getCategoryName(bio.category)}</td>
+                        <td>${bio.value} ${bio.unit}</td>
+                        <td>${bio.range}</td>
+                        <td><span class="trend-indicator ${trend.class}">${trend.symbol} ${trend.value}%</span></td>
+                        <td>${prediction} ${bio.unit}</td>
+                        <td>${zScore}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ==================== CHARTS ====================
+        function drawTimeSeriesChart() {
+            const canvas = document.getElementById('timeSeriesChart');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = 300;
+
+            const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
+            const colors = ['#06D6A0', '#0EA5E9', '#1E3A8A'];
+            const padding = 50;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Grid color adapts to theme
+            const isLight = document.body.classList.contains('light-mode');
+            ctx.strokeStyle = isLight ? '#E2E8F0' : '#334155';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (i * (canvas.height - 2 * padding) / 5);
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(canvas.width - padding, y);
+                ctx.stroke();
+            }
+
+            // Lines - Sin puntos circulares
+            biomarkersData.slice(0, 3).forEach((bio, idx) => {
+                ctx.strokeStyle = colors[idx];
+                ctx.lineWidth = 3;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.beginPath();
+
+                const max = Math.max(...bio.history);
+                const min = Math.min(...bio.history);
+                const range = max - min || 1;
+
+                bio.history.forEach((val, i) => {
+                    const x = padding + (i * (canvas.width - 2 * padding) / 5);
+                    const normalized = (val - min) / range;
+                    const y = canvas.height - padding - (normalized * (canvas.height - 2 * padding));
+
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+            });
+
+            // Labels
+            ctx.fillStyle = isLight ? '#475569' : '#CBD5E1';
+            ctx.font = '12px sans-serif';
+            ctx.textAlign = 'center';
+            months.forEach((m, i) => {
+                const x = padding + (i * (canvas.width - 2 * padding) / 5);
+                ctx.fillText(m, x, canvas.height - 20);
+            });
+        }
+
+        function drawDistributionChart() {
+            const canvas = document.getElementById('distributionChart');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = 300;
+
+            const optimal = biomarkersData.filter(b => b.status === 'optimal').length;
+            const warning = biomarkersData.filter(b => b.status === 'warning').length;
+            const critical = biomarkersData.filter(b => b.status === 'critical').length;
+            const total = biomarkersData.length;
+
+            const data = [
+                { label: 'Óptimo', value: optimal, color: '#06D6A0' },
+                { label: 'Atención', value: warning, color: '#0EA5E9' },
+                { label: 'Crítico', value: critical, color: '#0A2463' }
+            ];
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 90;
+            let currentAngle = -Math.PI / 2;
+
+            data.forEach(d => {
+                const sliceAngle = (d.value / total) * 2 * Math.PI;
+
+                ctx.fillStyle = d.color;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
+                ctx.arc(centerX, centerY, 45, currentAngle + sliceAngle, currentAngle, true);
+                ctx.closePath();
+                ctx.fill();
+
+                currentAngle += sliceAngle;
+            });
+
+            // Center
+            const isLight = document.body.classList.contains('light-mode');
+            ctx.fillStyle = isLight ? '#FFFFFF' : '#1E293B';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 40, 0, 2 * Math.PI);
+            ctx.fill();
+
+            ctx.fillStyle = isLight ? '#0A2463' : '#F1F5F9';
+            ctx.font = 'bold 28px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(total, centerX, centerY);
+        }
+
+        function drawCorrelationMatrix() {
+            const canvas = document.getElementById('correlationMatrix');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Ajustar tamaño según dispositivo
+            const containerWidth = canvas.parentElement.offsetWidth;
+            const isMobile = window.innerWidth < 768;
+            canvas.width = isMobile ? Math.max(600, containerWidth) : containerWidth;
+            canvas.height = 400;
+            
+            const markers = ['HbA1c', 'LDL', 'PCR', 'Vit D', 'TSH', 'Crea'];
+            const size = markers.length;
+            const cellSize = Math.min((canvas.width - 100) / size, (canvas.height - 100) / size);
+            const startX = 80;
+            const startY = 20;
+            
+            const isLight = document.body.classList.contains('light-mode');
+            
+            // Generate correlation matrix
+            const correlations = [];
+            for (let i = 0; i < size; i++) {
+                correlations[i] = [];
+                for (let j = 0; j < size; j++) {
+                    if (i === j) correlations[i][j] = 1.0;
+                    else correlations[i][j] = (Math.random() * 1.6) - 0.8;
+                }
+            }
+            
+            // Draw cells
+            correlations.forEach((row, i) => {
+                row.forEach((value, j) => {
+                    const x = startX + j * cellSize;
+                    const y = startY + i * cellSize;
+                    
+                    const intensity = Math.abs(value);
+                    const color = value > 0 
+                        ? `rgba(6, 214, 160, ${intensity})`
+                        : `rgba(10, 36, 99, ${intensity})`;
+                    
+                    ctx.fillStyle = color;
+                    ctx.fillRect(x, y, cellSize - 2, cellSize - 2);
+                    
+                    ctx.fillStyle = intensity > 0.5 ? 'white' : (isLight ? '#0A2463' : '#F1F5F9');
+                    ctx.font = 'bold 12px sans-serif';
+                   
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(value.toFixed(2), x + cellSize / 2, y + cellSize / 2);
+                });
+                
+                // Labels
+                ctx.fillStyle = isLight ? '#475569' : '#CBD5E1';
+                ctx.font = '11px sans-serif';
+                ctx.textAlign = 'right';
+                ctx.fillText(markers[i], startX - 10, startY + i * cellSize + cellSize / 2);
+                ctx.textAlign = 'center';
+                ctx.fillText(markers[i], startX + i * cellSize + cellSize / 2, startY - 10);
+            });
+        }
+
+        // ==================== HELPER FUNCTIONS ====================
+        function calculateTrend(history) {
+            const recent = history.slice(-3);
+            const change = ((recent[recent.length - 1] - recent[0]) / recent[0] * 100).toFixed(1);
+            
+            if (Math.abs(change) < 1) return { class: 'trend-stable', symbol: '→', value: change };
+            if (change > 0) return { class: 'trend-up', symbol: '↑', value: change };
+            return { class: 'trend-down', symbol: '↓', value: change };
+        }
+
+        function calculateZScore(bio) {
+            const avg = calculateAvg(bio.history);
+            const stdDev = calculateStdDev(bio.history, avg);
+            return ((bio.value - avg) / stdDev).toFixed(2);
+        }
+
+        function calculateAvg(arr) {
+            return arr.reduce((a, b) => a + b) / arr.length;
+        }
+
+        function calculateStdDev(arr, avg) {
+            const variance = arr.reduce((sum, val) => sum + Math.pow(val - avg, 2), 0) / arr.length;
+            return Math.sqrt(variance);
+        }
+
+        function getCategoryName(category) {
+            const names = {
+                'metabolico': 'Metabólico',
+                'cardiovascular': 'Cardiovascular',
+                'hepatico': 'Hepático',
+                'renal': 'Renal',
+                'endocrino': 'Endocrino',
+                'inmunologico': 'Inmunológico'
+            };
+            return names[category] || category;
+        }
+
+        // ==================== FILTERS ====================
+        function setupFilters() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.category;
+                    renderBiomarkersGrid();
+                    updateMetrics();
+                });
+            });
+        }
+
+        // ==================== UPDATE METRICS ====================
+        function updateMetrics() {
+            document.getElementById('samplesProcessed').textContent = samplesCount.toLocaleString();
+            document.getElementById('activeBiomarkers').textContent = biomarkersData.length;
+            
+            const correlations = biomarkersData.map(() => Math.random() * 0.4 + 0.5);
+            const avgCorr = (correlations.reduce((a, b) => a + b) / correlations.length).toFixed(2);
+            document.getElementById('avgCorrelation').textContent = avgCorr;
+        }
+
+        function updateDetailedStats() {
+            const allValues = biomarkersData.map(b => b.value);
+            const avg = calculateAvg(allValues);
+            const stdDev = calculateStdDev(allValues, avg);
+            const coeffVar = (stdDev / avg * 100);
+            
+            document.getElementById('globalStdDev').textContent = stdDev.toFixed(2);
+            document.getElementById('coeffVariation').textContent = coeffVar.toFixed(1);
+            
+            const trends = biomarkersData.map(b => calculateTrend(b.history));
+            const upCount = trends.filter(t => t.symbol === '↑').length;
+            const downCount = trends.filter(t => t.symbol === '↓').length;
+            const dominant = upCount > downCount ? 'Alcista ↑' : downCount > upCount ? 'Bajista ↓' : 'Estable →';
+            document.getElementById('dominantTrend').textContent = dominant;
+            
+            const alerts = biomarkersData.filter(b => b.status !== 'optimal').length;
+            document.getElementById('activeAlerts').textContent = alerts;
+        }
+
+        // ==================== LIVE UPDATES ====================
+        function startLiveUpdates() {
+            setInterval(() => {
+                samplesCount += Math.floor(Math.random() * 5);
+                updateMetrics();
+            }, 5000);
+        }
+
+        // ==================== RESPONSIVE ====================
+        window.addEventListener('resize', () => {
+            drawCorrelationMatrix();
+            drawTimeSeriesChart();
+            drawDistributionChart();
+            renderBiomarkersGrid();
+        });
+
+        // ==================== GENETIC PROFILE DEMO ====================
+        const geneticBases = ['A', 'C', 'G', 'T'];
+
+        function generateGeneticSequence() {
+            const sequence = [];
+            for (let i = 0; i < 16; i++) { // 16 líneas de codones
+                const line = [];
+                for (let j = 0; j < 10; j++) { // 10 codones por línea
+                    // Generar un codón (triplete)
+                    const codon = geneticBases[Math.floor(Math.random() * 4)] +
+                                  geneticBases[Math.floor(Math.random() * 4)] +
+                                  geneticBases[Math.floor(Math.random() * 4)];
+                    line.push(codon);
+                }
+                sequence.push(line.join(' '));
+            }
+            return sequence;
+        }
+
+        function displayGeneticSequence() {
+            const container = document.getElementById('geneticSequence');
+            if (!container) return;
+            
+            const sequence = generateGeneticSequence();
+            
+            // Introducir algunas mutaciones puntuales (cambio de una base)
+            container.innerHTML = sequence.map((line, idx) => {
+                const codons = line.split(' ');
+                const highlighted = codons.map((codon, i) => {
+                    // Marcar algunos codones como mutaciones
+                    if ((idx === 3 && (i === 2 || i === 7)) || 
+                        (idx === 8 && i === 5) ||
+                        (idx === 12 && i === 4)) {
+                        return `<span class="genetic-marker">${codon}</span>`;
+                    }
+                    return codon;
+                }).join(' ');
+                return highlighted;
+            }).join('<br>');
+        }
+
+        async function generateAnonymousProfile() {
+            const btn = document.getElementById('generateProfileBtn');
+            if (!btn) return;
+            
+            const stages = ['stage1', 'stage2', 'stage3', 'stage4'];
+            const finalProfile = document.getElementById('finalProfile');
+            
+            btn.disabled = true;
+            btn.textContent = 'Procesando...';
+            finalProfile.classList.remove('show');
+
+            // Reset stages
+            stages.forEach(id => {
+                const stage = document.getElementById(id);
+                stage.classList.remove('active', 'complete');
+            });
+
+            // Stage 1: Genetic markers extraction
+            await animateStage('stage1', async () => {
+                const markers = ['ACG→ATG', 'GCT', 'TAC→TGC'];
+                document.getElementById('stage1Output').textContent = 
+                    `Codones marcadores extraídos: ${markers.join(', ')} + 18 SNPs detectados`;
+            });
+
+            // Stage 2: SHA-256 Hash
+            await animateStage('stage2', async () => {
+                const hash = 'a7f3c9d8e2b14f56c83a92e1b7d4f8e3c5a9b2d6f1e8c4a7b3d9e5f2c8a1b6d4';
+                document.getElementById('stage2Output').textContent = 
+                    `Hash generado: ${hash}`;
+            });
+
+            // Stage 3: Biomarker integration
+            await animateStage('stage3', async () => {
+                document.getElementById('stage3Output').textContent = 
+                    `Hash + [HbA1c: 6.8, LDL: 145, TSH: 2.1, Crea: 0.9] → Hash combinado`;
+            });
+
+            // Stage 4: Anonymization
+            await animateStage('stage4', async () => {
+                document.getElementById('stage4Output').textContent = 
+                    `k-anonimato aplicado (k≥5) + Ruido DP (ε=0.1) + AES-256-GCM`;
+            });
+
+            // Show final profile
+            const finalId = 'BIO_' + Math.random().toString(36).substring(2, 15).toUpperCase();
+            document.getElementById('profileIdDisplay').textContent = finalId;
+            finalProfile.classList.add('show');
+
+            btn.disabled = false;
+            btn.textContent = 'Generar Nuevo Perfil';
+        }
+
+        async function animateStage(stageId, callback) {
+            const stage = document.getElementById(stageId);
+            stage.classList.add('active');
+            
+            await new Promise(resolve => setTimeout(resolve, 800));
+            await callback();
+            await new Promise(resolve => setTimeout(resolve, 600));
+            
+            stage.classList.remove('active');
+            stage.classList.add('complete');
+        }
+    </script>
+</body>
+</html>
